@@ -90,6 +90,11 @@ export function FloatingActions() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return <>
+    <nav className="ref-mobile-bar" aria-label="Quick contact">
+      <a href="tel:+919824066283"><Icon name="phone" size={18} />Call</a>
+      <a href="https://wa.me/919824066283" target="_blank" rel="noreferrer"><img src="/images/assets/whatsapp.webp" alt="" />WhatsApp</a>
+      <Link href="/contact" className="is-primary"><Icon name="mail" size={18} />Inquire</Link>
+    </nav>
     <a href="https://wa.me/919824066283" className="ref-whatsapp" aria-label="Chat on WhatsApp" target="_blank" rel="noreferrer"><img src="/images/assets/whatsapp.webp" alt="" /></a>
     <button type="button" className={`ref-top ${visible ? "is-visible" : ""}`} aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}><Icon name="up" size={20} /></button>
   </>;

@@ -16,9 +16,11 @@ const APPLICATIONS = [
 
 // Slide images must be text-free: the headline is rendered as live HTML on top of them.
 const HERO_SLIDES = [
-  { image: "/images/mactus/hero/hero-industrial-clean.webp", position: "left", headline: <>From <strong>Deep</strong> Within<br />the <strong>Earth</strong> to <strong>You</strong></> },
-  { image: "/images/mactus/hero/hero-minerals-clean.webp", position: "center", headline: <><strong>Nature&apos;s</strong> Finest<br />Minerals</> },
+  { image: "/images/mactus/hero/hero-industrial-clean.webp", position: "left", headline: <>From <strong>Deep</strong> Within<br />the <strong>Earth</strong> to <strong>You</strong></>, sub: "India's largest wet-type feldspar processing plant, supplying ceramic and industrial minerals worldwide." },
+  { image: "/images/mactus/hero/hero-minerals-clean.webp", position: "center", headline: <><strong>Nature&apos;s</strong> Finest<br />Minerals</>, sub: "Soda & Potash Feldspar, Talc, Kaolin, Quartz, Ball Clay and Mica, refined for consistent quality." },
 ];
+
+const STATS = [["20+", "Years of ceramic expertise"], ["550,000+", "TPA processing capacity"], ["7", "Industrial minerals"], ["19+", "Export destinations"]];
 
 const TESTIMONIALS = [
   ["/images/assets/test1.webp", "I would like to take this opportunity to say that the quality of service offered by the Mactus Mineral, our first contact over a year ago has been highly impressive.", "KHIMJIBHAI SAIDVA", "Director  - Accord vitrified private limited"],
@@ -189,12 +191,19 @@ const PRODUCT_SPECS = {
 function Home() {
   const [heroSlide, setHeroSlide] = useState(0);
   const [activeMineral, setActiveMineral] = useState(0);
+  const [mineralsTouched, setMineralsTouched] = useState(false);
   const [testimonial, setTestimonial] = useState(0);
   const currentTestimonial = TESTIMONIALS[testimonial];
   useEffect(() => {
     const id = window.setInterval(() => setHeroSlide((value) => (value + 1) % HERO_SLIDES.length), 7000);
     return () => window.clearInterval(id);
   }, []);
+  useEffect(() => {
+    // On small screens the strip is an accordion: rotate it until the visitor taps one.
+    if (mineralsTouched || !window.matchMedia("(max-width: 960px)").matches) return undefined;
+    const id = window.setInterval(() => setActiveMineral((value) => (value + 1) % PRODUCTS.length), 3800);
+    return () => window.clearInterval(id);
+  }, [mineralsTouched]);
   useEffect(() => {
     const id = window.setInterval(() => setTestimonial((value) => (value + 1) % TESTIMONIALS.length), 6000);
     return () => window.clearInterval(id);
@@ -203,12 +212,16 @@ function Home() {
     <section className="ref-hero" aria-label="Mactus Mineral">
       {HERO_SLIDES.map(({ image }, index) => <img key={image} src={image} alt="" className={`ref-hero-image ${heroSlide === index ? "is-active" : ""}`} />)}
       <div className="ref-hero-shade" />
-      <div className={`ref-hero-copy is-${HERO_SLIDES[heroSlide].position}`}><h1 key={heroSlide}>{HERO_SLIDES[heroSlide].headline}</h1></div>
+      <div className={`ref-hero-copy is-${HERO_SLIDES[heroSlide].position}`}>
+        <h1 key={heroSlide}>{HERO_SLIDES[heroSlide].headline}</h1>
+        <p className="ref-hero-sub">{HERO_SLIDES[heroSlide].sub}</p>
+        <div className="ref-hero-actions"><Button href="/product/soda-feldspar">Explore minerals <Icon name="arrow" size={16} /></Button><Button href="/contact" variant="outline">Inquire now</Button></div>
+      </div>
       <div className="ref-hero-controls" aria-label="Hero slides">{HERO_SLIDES.map((_, index) => <button type="button" key={index} aria-label={`Show slide ${index + 1}`} className={heroSlide === index ? "is-active" : ""} onClick={() => setHeroSlide(index)} />)}</div>
     </section>
     <section className="ref-about"><div className="ref-content ref-about-copy"><SectionTitle eyebrow="20+ YEARS EXPERT MINERAL SUPPLIER" title="Leading the Way in Ceramic Industry" /><p>Our group stands at the forefront of manufacturing, specializing in Refined Soda and Potash Feldspar. With technocrats boasting over 20 years of collective expertise in the Ceramic Industry, we guarantee products of the highest quality. From mining to processing and global distribution, we&apos;re committed to excellence every step of the way. In addition to feldspar, we pride ourselves on our extensive range of industrial minerals, including Talc,Kaolin Clay, Quartz, Ball Clay, Mica.</p><Button href="/company-profile">About Mactus <Icon name="arrow" size={16} /></Button></div></section>
-    <section className="ref-minerals ref-content"><SectionTitle eyebrow="OUR MINERALS" title="Explore Our Premium Minerals" /><p className="ref-intro">As a leading manufacturer and supplier, we specialize in mining, processing, and selling industrial minerals. Our extensive range includes Soda Feldspar, Potash Feldspar, Talc, Kaolin Clay, Quartz, Ball Clay, and Mica. Equipped with fully integrated facilities, we oversee every stage of production, from mining and crushing to refining and testing.</p><div className="ref-mineral-strip">{PRODUCTS.slice(0, 5).map(([name, slug, image], index) => <Link key={slug} href={`/product/${slug}`} className={`ref-mineral ${activeMineral === index ? "is-active" : ""}`} style={{ backgroundImage: `linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url("${image}")` }} onMouseEnter={() => setActiveMineral(index)} onFocus={() => setActiveMineral(index)}><span>{name}</span></Link>)}</div></section>
-    <section className="ref-choose"><div className="ref-content"><SectionTitle eyebrow="CHOOSE MACTUS" title="Your Leading Mineral Supplier" /><p className="ref-intro">Our group stands as a premier manufacturing organization, renowned for producing Refined Soda and Potash Feldspar. Guided by technocrats with over 20 years of expertise in the Ceramic Industry, we ensure unparalleled quality in every product.</p><div className="ref-card-grid">{[["Vision", "Our vision is to lead as a premier group in India and globally, offering innovative and consistently high-quality ceramic raw materials. At Mactus, we are driven by a belief in sustainable development. While minerals are essential for building modern civilization, we prioritize responsible extraction practices."], ["Mission", "Our mission is to responsibly mine and supply premium minerals, dedicated to enhancing the quality of raw materials as we firmly believe that quality is integral to our ethos We aim to be a beacon of reliability, delivering excellence in quality and service, and contributing to the growth and prosperity of communities we serve."], ["Achievements", "Introducing India's First Premium Quality 200 Mesh Feldspar Powder Achieved through Wet Type Processing, Complete with Dryer Inclusion. Proudly Setting the Benchmark as India's Largest Wet Type Processing Plant."]].map(([title, copy]) => <Card className="ref-info-card" key={title}><i><Icon name={title.toLowerCase()} /></i><h3>{title}</h3><p>{copy}</p></Card>)}</div></div></section>
+    <section className="ref-minerals ref-content"><SectionTitle eyebrow="OUR MINERALS" title="Explore Our Premium Minerals" /><p className="ref-intro">As a leading manufacturer and supplier, we specialize in mining, processing, and selling industrial minerals. Our extensive range includes Soda Feldspar, Potash Feldspar, Talc, Kaolin Clay, Quartz, Ball Clay, and Mica. Equipped with fully integrated facilities, we oversee every stage of production, from mining and crushing to refining and testing.</p><div className="ref-mineral-strip">{PRODUCTS.map(([name, slug, image], index) => <Link key={slug} href={`/product/${slug}`} className={`ref-mineral ${activeMineral === index ? "is-active" : ""}`} style={{ backgroundImage: `linear-gradient(rgba(10,18,40,.45), rgba(10,18,40,.62)), url("${image}")` }} onMouseEnter={() => setActiveMineral(index)} onFocus={() => setActiveMineral(index)} onClick={(event) => { if (activeMineral !== index && window.matchMedia("(max-width: 960px)").matches) { event.preventDefault(); setActiveMineral(index); setMineralsTouched(true); } }}><span>{name}</span><em>View product <Icon name="arrow" size={14} /></em></Link>)}</div></section>
+    <section className="ref-stats"><div className="ref-content ref-stats-grid">{STATS.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div></section>
     <section className="ref-ventures ref-content"><SectionTitle eyebrow="MACTUS VENTURES" title="A Collective Force" /><p className="ref-intro">Mactus Group comprises a dynamic network of companies dedicated to excellence in providing premium-quality ceramic raw materials.With a commitment to innovation and quality, our group of companies stands as a beacon of reliability and sustainability in the industry.</p><div className="ref-venture-grid"><div><img src="/images/assets/aj-microns.svg" alt="A&J Microns" /><h3>A&J MICRONS Pvt. Ltd</h3></div><div><img src="/images/assets/Mactus_Logo.svg" alt="Mactus Mineral" /><h3>MACTUS MINERAL LLP</h3></div></div></section>
     <section className="ref-testimonials ref-content"><div className="ref-testimonial-images"><img src={currentTestimonial[0]} alt={currentTestimonial[2]} /></div><div className="ref-testimonial-copy"><SectionTitle eyebrow="WHAT OUR CLIENTS SAY" title="Testimonials" /><p>{currentTestimonial[1]}</p><h3>{currentTestimonial[2]}</h3><span>{currentTestimonial[3]}</span><div className="ref-dots">{TESTIMONIALS.map((_, index) => <button key={index} className={index === testimonial ? "is-current" : ""} aria-label={`Show testimonial ${index + 1}`} onClick={() => setTestimonial(index)} />)}</div></div></section>
     <section className="ref-applications"><div className="ref-content"><SectionTitle eyebrow="" title="Best Suited Applications" /><div className="ref-application-grid">{APPLICATIONS.map(([name, image]) => <div key={name}><img src={`/images/assets/${image}`} alt={name} /><span>{name}</span></div>)}</div></div></section>
