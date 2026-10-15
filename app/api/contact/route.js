@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 
 const MAX_MESSAGE_LENGTH = 350;
 const SCRIPT_TIMEOUT_MS = 20000;
+const MIN_FILL_MS = 1500;
 
 const clean = (value) => (typeof value === "string" ? value.trim() : "");
 const fail = (error, status) => Response.json({ error }, { status });
@@ -10,8 +11,10 @@ export async function POST(request) {
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") return fail("Invalid request.", 400);
 
-  // Honeypot: real visitors never see or fill this field. Pretend success so bots learn nothing.
-  if (clean(body.website)) return Response.json({ message: "Thank you. Your details have been received." }, { status: 201 });
+  // Bot traps (replace a CAPTCHA): a hidden field real visitors never fill, and a form that was
+  // "completed" faster than a person can type. Pretend success so bots learn nothing.
+  const tooFast = typeof body.elapsed === "number" && body.elapsed < MIN_FILL_MS;
+  if (clean(body.website) || tooFast) return Response.json({ message: "Thank you. Your message has been received." }, { status: 201 });
 
   const entry = {
     submittedAt: new Date().toISOString(),
@@ -51,7 +54,7 @@ export async function POST(request) {
       console.error("Google Sheets script rejected the submission", response.status, result);
       return fail("We could not save your details. Please try again.", 502);
     }
-    return Response.json({ message: "Thank you. Your details have been received." }, { status: 201 });
+    return Response.json({ message: "Thank you. Your message has been received." }, { status: 201 });
   } catch (error) {
     console.error("Unable to reach the Google Sheets script", error);
     return fail("We could not save your details. Please try again.", 502);
