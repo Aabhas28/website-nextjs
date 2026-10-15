@@ -1,6 +1,6 @@
 :root { --ink: #222; --navy: #354477; --paper: #fff; --muted: #777; }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif; font-size: 16px; line-height: 1.5; }
 a { color: inherit; text-decoration: none; }
 .ref-content { width: min(1110px, calc(100% - 48px)); margin: 0 auto; }

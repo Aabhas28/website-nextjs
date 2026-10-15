@@ -307,6 +307,11 @@ function DetailPage({ route }) {
 
 export default function MactusSite({ route = "" }) {
   const pathname = usePathname();
+  // Every page change starts at the top, instantly (smooth scrolling made it land at random offsets).
+  useEffect(() => {
+    if (window.location.hash) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
   // Keyed by path so the header (and its open mobile menu) resets after each navigation.
   return <><Header key={pathname} />{route ? <DetailPage route={route} /> : <main><Home /></main>}<Footer /><FloatingActions /></>;
 }
